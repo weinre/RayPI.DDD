@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RayPI.OpenApi</name>
+    </assembly>
+    <members>
+        <member name="T:RayPI.OpenApi.Controllers.StudentController">
+            <summary>
+            学生模块
+            </summary>
+        </member>
+        <member name="M:RayPI.OpenApi.Controllers.StudentController.#ctor(RayPI.ApplicationService.IAppService.IStudentAppService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="iStudentAppService"></param>
+        </member>
+        <member name="M:RayPI.OpenApi.Controllers.StudentController.GetPage(System.Int32,System.Int32,System.String)">
+            <summary>
+            获取分页
+            </summary>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RayPI.OpenApi.Controllers.StudentController.Add(RayPI.ApplicationService.Dto.DtoStudentAddRequest)">
+            <summary>
+            添加学生
+            </summary>
+            <param name="addRequest"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RayPI.OpenApi.Controllers.StudentController.GetById(System.Int64)">
+            <summary>
+            获取单个
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RayPI.OpenApi.Controllers.ValuesController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RayPI.OpenApi.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="configuration"></param>
+        </member>
+        <member name="M:RayPI.OpenApi.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime.
+            Use this method to add services to the container.
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:RayPI.OpenApi.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+            <summary>
+            This method gets called by the runtime.
+            Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app"></param>
+            <param name="env"></param>
+        </member>
+    </members>
+</doc>
