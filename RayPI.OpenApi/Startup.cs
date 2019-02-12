@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Loader;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +11,12 @@ using RayPI.ApplicationService.IAppService;
 using RayPI.Domain.IRepository;
 using RayPI.Infrastructure.Repository;
 using RayPI.Infrastructure.Repository.Repository;
-using RayPI.Infrastructure.Treasury.Core.Adapters;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Module = Autofac.Module;
+using RayPI.Infrastructure.Treasury.Core.Extensions;
 
 namespace RayPI.OpenApi
 {
@@ -20,6 +27,7 @@ namespace RayPI.OpenApi
     {
         #region 注入
         public IConfiguration Configuration { get; }//配置
+        public IContainer AutoFacContainer { get; private set; }//容器
         #endregion
 
         /// <summary>
@@ -37,7 +45,7 @@ namespace RayPI.OpenApi
         /// Use this method to add services to the container.
         /// </summary>
         /// <param name="services"></param>
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<BizUnitOfWork>(options => options.UseSqlServer(Configuration.GetConnectionString("RayPIDbConnStr"), b => b.UseRowNumberForPaging()));//注入数据库上下文(参数2是为了兼容Sql2005)
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);//注入MVC
@@ -52,15 +60,26 @@ namespace RayPI.OpenApi
                 });
             });
 
-            services.AddTransient<IBizUnitOfWork, BizUnitOfWork>();
+            services.AddTransient<IBizUnitOfWork, BizUnitOfWork>();//注册数据库上下文
 
-            #region 注入Service
-            services.AddTransient<IStudentAppService, StudentAppService>();
+            #region 注册Service
+            //services.AddTransient<IStudentAppService, StudentAppService>();
+            services.RegisterAssembly("RayPI.ApplicationService");
             #endregion
 
-            #region 注入Repos
-            services.AddTransient<IStudentRepos, StudentRepos>();
+            #region 注册Repos
+            //services.AddTransient<IStudentRepos, StudentRepos>();
+            services.RegisterAssembly("RayPI.Domain","RayPI.Infrastructure.Repository");
             #endregion
+
+            #region AutoFac
+            var builder = new ContainerBuilder();
+            builder.Populate(services);
+            var module = new DefaultModuleRegister();
+            builder.RegisterModule(module);
+            AutoFacContainer = builder.Build();
+            #endregion
+            return new AutofacServiceProvider(AutoFacContainer);
         }
 
         /// <summary>
@@ -90,7 +109,31 @@ namespace RayPI.OpenApi
                 c.RoutePrefix = "";//设置根目录访问swagger
             });
             #endregion
+
             app.UseMvc();
+        }
+    }
+
+    /// <summary>
+    /// AutoFac注册
+    /// </summary>
+    public class DefaultModuleRegister : Module
+    {
+        protected override void Load(ContainerBuilder builder)
+        {
+            /*
+            var assemblys = System.Web.Compilation.BuildManager.GetReferencedAssemblies()
+                .Where(m =>
+                    m.FullName.Contains(".ApplicationService") ||
+                    m.FullName.Contains(".Infrastructure.Repository"))
+                .ToArray();
+            builder.RegisterAssemblyTypes(assemblys)
+                .Where(t => t.Name.EndsWith("Service"))
+                .AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterAssemblyTypes(assemblys)
+                .Where(t => t.Name.EndsWith("Repos"))
+                .AsImplementedInterfaces().InstancePerLifetimeScope();
+                */
         }
     }
 }
