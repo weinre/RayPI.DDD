@@ -30,9 +30,9 @@ namespace RayPI.OpenApi.Controllers
         /// <summary>
         /// 获取分页
         /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="name"></param>
+        /// <param name="pageIndex">当前页</param>
+        /// <param name="pageSize">每页条数</param>
+        /// <param name="name">学生姓名</param>
         /// <returns></returns>
         [HttpGet]
         public PageResult<DtoStudentResponse> GetPage(int pageIndex = 1, int pageSize = 10, string name = null)
@@ -43,7 +43,7 @@ namespace RayPI.OpenApi.Controllers
         /// <summary>
         /// 添加学生
         /// </summary>
-        /// <param name="addRequest"></param>
+        /// <param name="addRequest">学生添加Dto</param>
         /// <returns></returns>
         [HttpPost]
         public long Add(DtoStudentAddRequest addRequest)
@@ -54,7 +54,7 @@ namespace RayPI.OpenApi.Controllers
         /// <summary>
         /// 获取单个
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">学生Id</param>
         /// <returns></returns>
         [HttpGet("{id}")]
         public DtoStudentResponse GetById(long id)

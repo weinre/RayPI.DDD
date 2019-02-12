@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RayPI.ApplicationService</name>
+    </assembly>
+    <members>
+        <member name="T:RayPI.ApplicationService.Dto.DtoBaseStudent">
+            <summary>
+            基类Dto
+            </summary>
+        </member>
+        <member name="P:RayPI.ApplicationService.Dto.DtoBaseStudent.Name">
+            <summary>
+                姓名
+            </summary>
+        </member>
+        <member name="P:RayPI.ApplicationService.Dto.DtoBaseStudent.Gender">
+            <summary>
+                性别
+            </summary>
+        </member>
+        <member name="P:RayPI.ApplicationService.Dto.DtoBaseStudent.Age">
+            <summary>
+            年龄
+            </summary>
+        </member>
+        <member name="T:RayPI.ApplicationService.Dto.DtoStudentAddRequest">
+            <summary>
+            添加Dto
+            </summary>
+        </member>
+        <member name="T:RayPI.ApplicationService.Dto.DtoStudentUpdateRequest">
+            <summary>
+            编辑Dto
+            </summary>
+        </member>
+        <member name="T:RayPI.ApplicationService.Dto.DtoStudentResponse">
+            <summary>
+            单个返回Dto
+            </summary>
+        </member>
+    </members>
+</doc>

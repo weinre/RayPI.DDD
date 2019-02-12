@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
@@ -58,6 +59,11 @@ namespace RayPI.OpenApi
                     Title = "RayPI.DDD",
                     Version = "1.0"
                 });
+                var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);//获取应用程序所在目录（绝对，不受工作目录影响，建议采用此方法获取路径）
+                var controllerXmlPath = Path.Combine(basePath, "RayPI.OpenApi.xml");
+                var dtoXmlPath = Path.Combine(basePath, "RayPI.ApplicationService.xml");
+                c.IncludeXmlComments(controllerXmlPath, true);
+                c.IncludeXmlComments(dtoXmlPath);
             });
 
             services.AddTransient<IBizUnitOfWork, BizUnitOfWork>();//注册数据库上下文
@@ -69,7 +75,7 @@ namespace RayPI.OpenApi
 
             #region 注册Repos
             //services.AddTransient<IStudentRepos, StudentRepos>();
-            services.RegisterAssembly("RayPI.Domain","RayPI.Infrastructure.Repository");
+            services.RegisterAssembly("RayPI.Domain", "RayPI.Infrastructure.Repository");
             #endregion
 
             #region AutoFac

@@ -19,26 +19,81 @@
             <summary>
             获取分页
             </summary>
-            <param name="pageIndex"></param>
-            <param name="pageSize"></param>
-            <param name="name"></param>
+            <param name="pageIndex">当前页</param>
+            <param name="pageSize">每页条数</param>
+            <param name="name">学生姓名</param>
             <returns></returns>
         </member>
         <member name="M:RayPI.OpenApi.Controllers.StudentController.Add(RayPI.ApplicationService.Dto.DtoStudentAddRequest)">
             <summary>
             添加学生
             </summary>
-            <param name="addRequest"></param>
+            <param name="addRequest">学生添加Dto</param>
             <returns></returns>
         </member>
         <member name="M:RayPI.OpenApi.Controllers.StudentController.GetById(System.Int64)">
             <summary>
             获取单个
             </summary>
-            <param name="id"></param>
+            <param name="id">学生Id</param>
             <returns></returns>
         </member>
         <member name="T:RayPI.OpenApi.Controllers.ValuesController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RayPI.OpenApi.Controllers.ValuesController.Get">
+            <summary>
+            GET api/values
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RayPI.OpenApi.Controllers.ValuesController.Get(System.Int32)">
+            <summary>
+            GET api/values/5
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RayPI.OpenApi.Controllers.ValuesController.Post(System.String)">
+            <summary>
+            POST api/values
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:RayPI.OpenApi.Controllers.ValuesController.Put(System.Int32,System.String)">
+            <summary>
+            PUT api/values/5
+            </summary>
+            <param name="id"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:RayPI.OpenApi.Controllers.ValuesController.Delete(System.Int32)">
+            <summary>
+            DELETE api/values/5
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="T:RayPI.OpenApi.Program">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:RayPI.OpenApi.Program.Main(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+        </member>
+        <member name="M:RayPI.OpenApi.Program.CreateWebHostBuilder(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RayPI.OpenApi.Startup">
             <summary>
             
             </summary>
@@ -63,6 +118,11 @@
             </summary>
             <param name="app"></param>
             <param name="env"></param>
+        </member>
+        <member name="T:RayPI.OpenApi.DefaultModuleRegister">
+            <summary>
+            AutoFac注册
+            </summary>
         </member>
     </members>
 </doc>
