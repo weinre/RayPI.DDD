@@ -1,53 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace RayPI.Domain.Core.Specifications
 {
+    /// <summary>
+    /// “与”规约
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public sealed class AndSpecification<T> : CompositeSpecification<T> where T : class
     {
-        private ISpecification<T> _RightSideSpecification;
-        private ISpecification<T> _LeftSideSpecification;
+        private readonly ISpecification<T> _rightSideSpecification;
+        private readonly ISpecification<T> _leftSideSpecification;
 
-        /// <summary>Default constructor for AndSpecification</summary>
+        /// <summary>构造函数</summary>
         /// <param name="leftSide">Left side specification</param>
         /// <param name="rightSide">Right side specification</param>
         public AndSpecification(ISpecification<T> leftSide, ISpecification<T> rightSide)
         {
-            if (leftSide == null)
-                throw new ArgumentNullException(nameof(leftSide));
-            if (rightSide == null)
-                throw new ArgumentNullException(nameof(rightSide));
-            this._LeftSideSpecification = leftSide;
-            this._RightSideSpecification = rightSide;
+            this._leftSideSpecification = leftSide ?? throw new ArgumentNullException(nameof(leftSide));
+            this._rightSideSpecification = rightSide ?? throw new ArgumentNullException(nameof(rightSide));
         }
 
+        /// <inheritdoc />
         /// <summary>Left side specification</summary>
-        public override ISpecification<T> LeftSideSpecification
-        {
-            get
-            {
-                return this._LeftSideSpecification;
-            }
-        }
+        public override ISpecification<T> LeftSideSpecification => this._leftSideSpecification;
 
+        /// <inheritdoc />
         /// <summary>Right side specification</summary>
-        public override ISpecification<T> RightSideSpecification
-        {
-            get
-            {
-                return this._RightSideSpecification;
-            }
-        }
+        public override ISpecification<T> RightSideSpecification => this._rightSideSpecification;
 
         /// <summary>
-        /// <see cref="T:NLC.Domain.Specifications.ISpecification`1" />
+        /// 覆写
         /// </summary>
-        /// <returns><see cref="T:NLC.Domain.Specifications.ISpecification`1" /></returns>
+        /// <returns></returns>
         public override Expression<Func<T, bool>> SatisfiedBy()
         {
-            return this._LeftSideSpecification.SatisfiedBy().And<T>(this._RightSideSpecification.SatisfiedBy());
+            return this._leftSideSpecification.SatisfiedBy().And<T>(this._rightSideSpecification.SatisfiedBy());
         }
     }
 }

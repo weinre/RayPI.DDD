@@ -5,6 +5,11 @@ using System.Text;
 
 namespace RayPI.Domain.Core.Specifications
 {
+    /// <summary>
+    /// Helper for rebinder parameters without use Invoke method in expressions
+    /// ( this methods is not supported in all linq query providers,
+    /// for example in Linq2Entities is not supported)
+    /// </summary>
     public sealed class ParameterRebinder : ExpressionVisitor
     {
         private readonly Dictionary<ParameterExpression, ParameterExpression> map;

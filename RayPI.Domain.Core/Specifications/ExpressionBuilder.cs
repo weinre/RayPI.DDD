@@ -6,6 +6,9 @@ using System.Text;
 
 namespace RayPI.Domain.Core.Specifications
 {
+    /// <summary>
+    /// Extension methods for add And and Or with parameters rebinder
+    /// </summary>
     public static class ExpressionBuilder
     {
         /// <summary>

@@ -99,10 +99,6 @@ namespace RayPI.Domain.Core
 
 
         #region 查
-        /// <summary>跟踪</summary>
-        /// <param name="item">The item.</param>
-        void TrackItem(TAggregateRoot item);
-
         /// <summary>根据聚合根的id查 或者 联查一些附属信息</summary>
         /// <param name="id">主键</param>
         /// <param name="isIgnoreDelete">是否忽略已逻辑删除的数据</param>
@@ -166,5 +162,9 @@ namespace RayPI.Domain.Core
         /// <returns>System.Int32.</returns>
         int GetCount(ISpecification<TAggregateRoot> specification, bool isIgnoreDelete = true);
         #endregion
+
+        /// <summary>跟踪</summary>
+        /// <param name="item">The item.</param>
+        void TrackItem(TAggregateRoot item);
     }
 }

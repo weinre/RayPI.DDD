@@ -5,6 +5,9 @@ using System.Text;
 
 namespace RayPI.Domain.Core
 {
+    /// <summary>
+    /// Sql语句相关
+    /// </summary>
     public interface ISQL
     {
         /// <summary>执行普通查询</summary>

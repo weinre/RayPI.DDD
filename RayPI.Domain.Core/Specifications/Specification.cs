@@ -5,13 +5,17 @@ using System.Text;
 
 namespace RayPI.Domain.Core.Specifications
 {
+    /// <summary>
+    /// 规约抽象基类
+    /// </summary>
+    /// <typeparam name="TAggregateRoot"></typeparam>
     public abstract class Specification<TAggregateRoot> : ISpecification<TAggregateRoot> where TAggregateRoot : class
     {
         /// <summary>IsSatisFied Specification pattern method,</summary>
         /// <returns>Expression that satisfy this specification</returns>
         public abstract Expression<Func<TAggregateRoot, bool>> SatisfiedBy();
 
-        /// <summary>And operator</summary>
+        /// <summary>“与”运算符</summary>
         /// <param name="leftSideSpecification">left operand in this AND operation</param>
         /// <param name="rightSideSpecification">right operand in this AND operation</param>
         /// <returns>New specification</returns>
@@ -20,7 +24,7 @@ namespace RayPI.Domain.Core.Specifications
             return (Specification<TAggregateRoot>)new AndSpecification<TAggregateRoot>((ISpecification<TAggregateRoot>)leftSideSpecification, (ISpecification<TAggregateRoot>)rightSideSpecification);
         }
 
-        /// <summary>Or operator</summary>
+        /// <summary>“或”运算符</summary>
         /// <param name="leftSideSpecification">left operand in this OR operation</param>
         /// <param name="rightSideSpecification">left operand in this OR operation</param>
         /// <returns>New specification </returns>
@@ -29,7 +33,7 @@ namespace RayPI.Domain.Core.Specifications
             return (Specification<TAggregateRoot>)new OrSpecification<TAggregateRoot>((ISpecification<TAggregateRoot>)leftSideSpecification, (ISpecification<TAggregateRoot>)rightSideSpecification);
         }
 
-        /// <summary>Not specification</summary>
+        /// <summary>“非”运算符</summary>
         /// <param name="specification">Specification to negate</param>
         /// <returns>New specification</returns>
         public static Specification<TAggregateRoot> operator !(Specification<TAggregateRoot> specification)
@@ -38,7 +42,7 @@ namespace RayPI.Domain.Core.Specifications
         }
 
         /// <summary>
-        /// Override operator false, only for support AND OR operators
+        /// 重载false运算符, 仅支持AND和OR运算符
         /// </summary>
         /// <param name="specification">Specification instance</param>
         /// <returns>See False operator in C#</returns>
@@ -48,7 +52,7 @@ namespace RayPI.Domain.Core.Specifications
         }
 
         /// <summary>
-        /// Override operator True, only for support AND OR operators
+        /// 重载true运算符, 仅支持AND和OR运算符
         /// </summary>
         /// <param name="specification">Specification instance</param>
         /// <returns>See True operator in C#</returns>

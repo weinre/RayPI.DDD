@@ -6,37 +6,39 @@ using System.Text;
 
 namespace RayPI.Domain.Core.Specifications
 {
+    /// <summary>
+    /// “非”规约
+    /// </summary>
+    /// <typeparam name="TAggregateRoot"></typeparam>
     public sealed class NotSpecification<TAggregateRoot> : Specification<TAggregateRoot> where TAggregateRoot : class
     {
-        private Expression<Func<TAggregateRoot, bool>> _OriginalCriteria;
+        private readonly Expression<Func<TAggregateRoot, bool>> _originalCriteria;
 
-        /// <summary>Constructor for NotSpecificaiton</summary>
+        /// <summary>构造函数</summary>
         /// <param name="originalSpecification">Original specification</param>
         public NotSpecification(ISpecification<TAggregateRoot> originalSpecification)
         {
             if (originalSpecification == null)
                 throw new ArgumentNullException(nameof(originalSpecification));
-            this._OriginalCriteria = originalSpecification.SatisfiedBy();
+            this._originalCriteria = originalSpecification.SatisfiedBy();
         }
 
-        /// <summary>Constructor for NotSpecification</summary>
+        /// <summary>构造函数</summary>
         /// <param name="originalSpecification">Original specificaiton</param>
         public NotSpecification(Expression<Func<TAggregateRoot, bool>> originalSpecification)
         {
-            if (originalSpecification == null)
-                throw new ArgumentNullException(nameof(originalSpecification));
-            this._OriginalCriteria = originalSpecification;
+            this._originalCriteria = originalSpecification ?? throw new ArgumentNullException(nameof(originalSpecification));
         }
 
         /// <summary>
-        /// <see cref="T:NLC.Domain.Specifications.ISpecification`1" />
+        /// 覆写
         /// </summary>
-        /// <returns><see cref="T:NLC.Domain.Specifications.ISpecification`1" /></returns>
+        /// <returns></returns>
         public override Expression<Func<TAggregateRoot, bool>> SatisfiedBy()
         {
-            return Expression.Lambda<Func<TAggregateRoot, bool>>((Expression)Expression.Not(this._OriginalCriteria.Body), new ParameterExpression[1]
+            return Expression.Lambda<Func<TAggregateRoot, bool>>((Expression)Expression.Not(this._originalCriteria.Body), new ParameterExpression[1]
             {
-                this._OriginalCriteria.Parameters.Single<ParameterExpression>()
+                this._originalCriteria.Parameters.Single<ParameterExpression>()
             });
         }
     }
