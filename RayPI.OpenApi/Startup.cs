@@ -112,7 +112,7 @@ namespace RayPI.OpenApi
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "ApiHelp V1");
-                c.RoutePrefix = "";//设置根目录访问swagger
+                c.RoutePrefix = "swagger";//设置根目录访问swagger
             });
             #endregion
 
@@ -127,12 +127,15 @@ namespace RayPI.OpenApi
     {
         protected override void Load(ContainerBuilder builder)
         {
-            /*
-            var assemblys = System.Web.Compilation.BuildManager.GetReferencedAssemblies()
-                .Where(m =>
-                    m.FullName.Contains(".ApplicationService") ||
-                    m.FullName.Contains(".Infrastructure.Repository"))
+            //var allAssemblys = System.Web.Compilation.BuildManager.GetReferencedAssemblies();
+            //var allAssemblys = Assembly.GetEntryAssembly().GetReferencedAssemblies();
+            var allAssemblys = Assembly.GetEntryAssembly().GetReferencedAssemblies();
+
+            var assemblys = allAssemblys.Where(m =>
+                      m.FullName.Contains(".ApplicationService") ||
+                      m.FullName.Contains(".Infrastructure.Repository"))
                 .ToArray();
+            /*
             builder.RegisterAssemblyTypes(assemblys)
                 .Where(t => t.Name.EndsWith("Service"))
                 .AsImplementedInterfaces().InstancePerLifetimeScope();
