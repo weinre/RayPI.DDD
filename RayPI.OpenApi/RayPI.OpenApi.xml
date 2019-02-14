@@ -5,11 +5,12 @@
     </assembly>
     <members>
         <member name="T:RayPI.OpenApi.Controllers.StudentController">
+            <inheritdoc />
             <summary>
             学生模块
             </summary>
         </member>
-        <member name="M:RayPI.OpenApi.Controllers.StudentController.#ctor(RayPI.ApplicationService.IAppService.IStudentAppService)">
+        <member name="M:RayPI.OpenApi.Controllers.StudentController.#ctor(RayPI.ApplicationService.IAppService.IStudentService)">
             <summary>
             构造函数
             </summary>

@@ -48,8 +48,9 @@ namespace RayPI.OpenApi
         /// <param name="services"></param>
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<BizUnitOfWork>(options => options.UseSqlServer(Configuration.GetConnectionString("RayPIDbConnStr"), b => b.UseRowNumberForPaging()));//注入数据库上下文(参数2是为了兼容Sql2005)
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);//注入MVC
+            //注册MVC
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            //注册Swagger
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info
@@ -65,18 +66,19 @@ namespace RayPI.OpenApi
                 c.IncludeXmlComments(controllerXmlPath, true);
                 c.IncludeXmlComments(dtoXmlPath);
             });
+            //注册数据库上下文(参数2是为了兼容Sql2005)
+            services.AddDbContext<BizUnitOfWork>(options => options.UseSqlServer(Configuration.GetConnectionString("RayPIDbConnStr"), b => b.UseRowNumberForPaging()));
+            services.AddTransient<IBizUnitOfWork, BizUnitOfWork>();
 
-            services.AddTransient<IBizUnitOfWork, BizUnitOfWork>();//注册数据库上下文
-
-            #region 注册Service
+            //注册Service
             //services.AddTransient<IStudentAppService, StudentAppService>();
-            services.RegisterAssembly("RayPI.ApplicationService");
-            #endregion
+            //services.RegisterAssembly("RayPI.ApplicationService");
+            //改为交由AutoFac注册
 
-            #region 注册Repos
+            //注册Repos
             //services.AddTransient<IStudentRepos, StudentRepos>();
-            services.RegisterAssembly("RayPI.Domain", "RayPI.Infrastructure.Repository");
-            #endregion
+            //services.RegisterAssembly("RayPI.Domain", "RayPI.Infrastructure.Repository");
+            //改为交由AutoFac注册
 
             #region AutoFac
             var builder = new ContainerBuilder();
@@ -127,22 +129,23 @@ namespace RayPI.OpenApi
     {
         protected override void Load(ContainerBuilder builder)
         {
+            //1.获取程序集
             //var allAssemblys = System.Web.Compilation.BuildManager.GetReferencedAssemblies();
-            //var allAssemblys = Assembly.GetEntryAssembly().GetReferencedAssemblies();
-            var allAssemblys = Assembly.GetEntryAssembly().GetReferencedAssemblies();
+            Assembly[] allAssemblys = Assembly.GetEntryAssembly().GetReferencedAssemblies().Select(Assembly.Load).ToArray();
 
-            var assemblys = allAssemblys.Where(m =>
+            Assembly[] assemblys = allAssemblys.Where(m =>
                       m.FullName.Contains(".ApplicationService") ||
                       m.FullName.Contains(".Infrastructure.Repository"))
                 .ToArray();
-            /*
+
+            //2.注册service
             builder.RegisterAssemblyTypes(assemblys)
                 .Where(t => t.Name.EndsWith("Service"))
                 .AsImplementedInterfaces().InstancePerLifetimeScope();
+            //3.注册repository
             builder.RegisterAssemblyTypes(assemblys)
                 .Where(t => t.Name.EndsWith("Repos"))
                 .AsImplementedInterfaces().InstancePerLifetimeScope();
-                */
         }
     }
 }
