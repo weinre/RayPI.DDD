@@ -9,6 +9,7 @@ using RayPI.Infrastructure.Treasury.Core.Model;
 
 namespace RayPI.OpenApi.Controllers
 {
+    /// <inheritdoc />
     /// <summary>
     /// 学生模块
     /// </summary>
@@ -16,13 +17,13 @@ namespace RayPI.OpenApi.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-        private readonly IStudentAppService _iStudentAppService;
+        private readonly IStudentService _iStudentAppService;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="iStudentAppService"></param>
-        public StudentController(IStudentAppService iStudentAppService)
+        public StudentController(IStudentService iStudentAppService)
         {
             _iStudentAppService = iStudentAppService;
         }

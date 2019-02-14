@@ -9,11 +9,11 @@ using RayPI.Infrastructure.Treasury.Core.Model.Enums;
 
 namespace RayPI.ApplicationService.AppService
 {
-    public class StudentAppService : IStudentAppService
+    public class StudentService : IStudentService
     {
         private readonly IStudentRepos _iStudentRepos;
 
-        public StudentAppService(IStudentRepos iStudentRepos)
+        public StudentService(IStudentRepos iStudentRepos)
         {
             _iStudentRepos = iStudentRepos;
         }

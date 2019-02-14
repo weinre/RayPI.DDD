@@ -13,8 +13,10 @@ namespace RayPI.Infrastructure.Repository.Core
 {
     public class Repository<TKey, TAggregateRoot> : IRepository<TKey, TAggregateRoot> where TAggregateRoot : EntityBase, new()
     {
+        #region 容器注入
         /// <summary>The _unit of work</summary>
         private readonly IQueryableUnitOfWork _unitOfWork;
+        #endregion
 
         /// <summary>
         /// Initializes a new instance of the class.
@@ -24,57 +26,10 @@ namespace RayPI.Infrastructure.Repository.Core
         /// <exception cref="T:System.ArgumentNullException"></exception>
         public Repository(IQueryableUnitOfWork unitOfWork)
         {
-            if (unitOfWork == null)
-                throw new ArgumentNullException(nameof(unitOfWork));
-            this._unitOfWork = unitOfWork;
-        }
-
-        /// <summary>Gets the member information.</summary>
-        /// <param name="lambda">The lambda.</param>
-        /// <returns>MemberExpression.</returns>
-        /// <exception cref="T:System.ArgumentNullException"></exception>
-        /// <exception cref="T:System.ArgumentException"></exception>
-        /// <exception cref="T:System.ArgumentNullException"></exception>
-        /// <exception cref="T:System.ArgumentException"></exception>
-        private MemberExpression GetMemberInfo(LambdaExpression lambda)
-        {
-            if (lambda == null)
-                throw new ArgumentNullException(nameof(lambda));
-            MemberExpression memberExpression = (MemberExpression)null;
-            switch (lambda.Body.NodeType)
-            {
-                case ExpressionType.Convert:
-                    memberExpression = ((UnaryExpression)lambda.Body).Operand as MemberExpression;
-                    break;
-                case ExpressionType.MemberAccess:
-                    memberExpression = lambda.Body as MemberExpression;
-                    break;
-            }
-            if (memberExpression == null)
-                throw new ArgumentException(nameof(lambda));
-            return memberExpression;
-        }
-
-        /// <summary>Gets the related loading path.</summary>
-        /// <param name="relatedLoadingProperty">The related loading property.</param>
-        /// <returns>System.String.</returns>
-        private string GetRelatedLoadingPath(Expression<Func<TAggregateRoot, object>> relatedLoadingProperty)
-        {
-            return this.GetMemberInfo((LambdaExpression)relatedLoadingProperty).ToString().Replace(relatedLoadingProperty.Parameters.First<ParameterExpression>().Name + ".", "");
+            this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         #region 增
-
-        /// <summary>批量新增</summary>
-        /// <param name="tAggregateRoots">实体集合</param>
-        /// <returns>IEnumerable&lt;System.Int64&gt;.</returns>
-        public virtual IEnumerable<long> Add(IEnumerable<TAggregateRoot> tAggregateRoots)
-        {
-            IEnumerable<long> longs = this._unitOfWork.Add<TAggregateRoot>(tAggregateRoots);
-            this._unitOfWork.SaveChanges();
-            return longs;
-        }
-
         /// <summary>新增</summary>
         /// <param name="item">实体</param>
         /// <returns>System.Int64.</returns>
@@ -84,9 +39,127 @@ namespace RayPI.Infrastructure.Repository.Core
             this._unitOfWork.SaveChanges();
             return num;
         }
+        /// <summary>批量新增</summary>
+        /// <param name="tAggregateRoots">实体集合</param>
+        /// <returns>IEnumerable&lt;System.Int64&gt;.</returns>
+        public virtual IEnumerable<long> Add(IEnumerable<TAggregateRoot> tAggregateRoots)
+        {
+            IEnumerable<long> longs = this._unitOfWork.Add<TAggregateRoot>(tAggregateRoots);
+            this._unitOfWork.SaveChanges();
+            return longs;
+        }
+        #endregion
+
+        #region 删
+        /// <summary>物理移除</summary>
+        /// <param name="id">主键</param>
+        public virtual void Remove(TKey id)
+        {
+            this.Remove((ISpecification<TAggregateRoot>)new DirectSpecification<TAggregateRoot>((Expression<Func<TAggregateRoot, bool>>)(x => x.Id.ToString() == id.ToString())));
+            this._unitOfWork.SaveChanges();
+        }
+        /// <summary>物理移除</summary>
+        /// <param name="item">实体</param>
+        public virtual void Remove(TAggregateRoot item)
+        {
+            this._unitOfWork.Remove<TAggregateRoot>(item);
+            this._unitOfWork.SaveChanges();
+        }
+
+        /// <summary>批量物理移除</summary>
+        /// <param name="tAggregateRoots">批量实体</param>
+        public void Remove(IQueryable<TAggregateRoot> tAggregateRoots)
+        {
+            this._unitOfWork.Remove<TAggregateRoot>(tAggregateRoots);
+            this._unitOfWork.SaveChanges();
+        }
+
+        /// <summary>批量物理移除</summary>
+        /// <param name="filter">移除条件</param>
+        public virtual void Remove(ISpecification<TAggregateRoot> filter)
+        {
+            this._unitOfWork.Remove<TAggregateRoot>(filter);
+            this._unitOfWork.SaveChanges();
+        }
+
+        /// <summary>逻辑删除</summary>
+        /// <param name="id">The item.</param>
+        public virtual void Delete(TKey id)
+        {
+            this.Delete((ISpecification<TAggregateRoot>)new DirectSpecification<TAggregateRoot>((Expression<Func<TAggregateRoot, bool>>)(x => x.Id.ToString() == id.ToString())));
+            this._unitOfWork.SaveChanges();
+        }
+
+        /// <summary>逻辑删除</summary>
+        /// <param name="item">The item.</param>
+        public virtual void Delete(TAggregateRoot item)
+        {
+            this._unitOfWork.Delete<TAggregateRoot>(item);
+            this._unitOfWork.SaveChanges();
+        }
+
+        /// <summary>逻辑删除</summary>
+        /// <param name="tAggregateRoots">批量实体</param>
+        public void Delete(IQueryable<TAggregateRoot> tAggregateRoots)
+        {
+            this._unitOfWork.Delete<TAggregateRoot>(tAggregateRoots);
+            this._unitOfWork.SaveChanges();
+        }
+
+        /// <summary>逻辑删除</summary>
+        /// <param name="filter">移除条件</param>
+        public virtual void Delete(ISpecification<TAggregateRoot> filter)
+        {
+            this._unitOfWork.Delete<TAggregateRoot>(filter);
+            this._unitOfWork.SaveChanges();
+        }
+        #endregion 
+
+        #region 改
+        /// <summary>添加或更新</summary>
+        /// <param name="item">实体</param>
+        public virtual void UpSert(TAggregateRoot item)
+        {
+            this._unitOfWork.UpSert<TAggregateRoot>(item);
+            this._unitOfWork.SaveChanges();
+        }
+        /// <summary>更新实体</summary>
+        /// <param name="item">The item.</param>
+        /// <param name="ignoreFileds">忽略部分字段更新</param>
+        /// <exception cref="T:System.NotImplementedException"></exception>
+        public virtual void Update(TAggregateRoot item, params Expression<Func<TAggregateRoot, object>>[] ignoreFileds)
+        {
+            this._unitOfWork.Update<TAggregateRoot>(item, ignoreFileds);
+            this._unitOfWork.SaveChanges();
+        }
+
+        /// <summary>批量修改</summary>
+        /// <param name="tAggregateRoots">批量实体</param>
+        public virtual void Update(IQueryable<TAggregateRoot> tAggregateRoots)
+        {
+            this._unitOfWork.Update<TAggregateRoot>(tAggregateRoots);
+            this._unitOfWork.SaveChanges();
+        }
+
+        /// <summary>根据赋值的实体进行修改</summary>
+        /// <param name="filter">更新条件</param>
+        /// <param name="value">更新字段值</param>
+        public virtual void Update(ISpecification<TAggregateRoot> filter, Expression<Func<TAggregateRoot, TAggregateRoot>> value)
+        {
+            this._unitOfWork.Update<TAggregateRoot>(filter, value);
+            this._unitOfWork.SaveChanges();
+        }
         #endregion
 
         #region 查
+        /// <summary>判断是否存在</summary>
+        /// <param name="filter">查询条件</param>
+        /// <param name="isIgnoreDelete">是否忽略已逻辑删除的数据</param>
+        /// <returns>true=存在，false=不存在</returns>
+        public bool Any(ISpecification<TAggregateRoot> filter, bool isIgnoreDelete = true)
+        {
+            return this.GetAllMatching(filter, isIgnoreDelete).Any<TAggregateRoot>();
+        }
 
         /// <summary>根据聚合根的id查 或者 联查一些附属信息</summary>
         /// <param name="id">主键</param>
@@ -220,72 +293,8 @@ namespace RayPI.Infrastructure.Repository.Core
         }
         #endregion
 
-        #region 删
-        /// <summary>批量移除</summary>
-        /// <param name="filter">移除条件</param>
-        public virtual void Remove(ISpecification<TAggregateRoot> filter)
-        {
-            this._unitOfWork.Remove<TAggregateRoot>(filter);
-            this._unitOfWork.SaveChanges();
-        }
 
-        /// <summary>移除</summary>
-        /// <param name="item">实体</param>
-        public virtual void Remove(TAggregateRoot item)
-        {
-            this._unitOfWork.Remove<TAggregateRoot>(item);
-            this._unitOfWork.SaveChanges();
-        }
-
-        /// <summary>移除</summary>
-        /// <param name="id">主键</param>
-        public virtual void Remove(TKey id)
-        {
-            this.Remove((ISpecification<TAggregateRoot>)new DirectSpecification<TAggregateRoot>((Expression<Func<TAggregateRoot, bool>>)(x => x.Id.ToString() == id.ToString())));
-            this._unitOfWork.SaveChanges();
-        }
-
-        /// <summary>批量移除</summary>
-        /// <param name="tAggregateRoots">批量实体</param>
-        public void Remove(IQueryable<TAggregateRoot> tAggregateRoots)
-        {
-            this._unitOfWork.Remove<TAggregateRoot>(tAggregateRoots);
-            this._unitOfWork.SaveChanges();
-        }
-
-        /// <summary>逻辑删除</summary>
-        /// <param name="tAggregateRoots">批量实体</param>
-        public void Delete(IQueryable<TAggregateRoot> tAggregateRoots)
-        {
-            this._unitOfWork.Delete<TAggregateRoot>(tAggregateRoots);
-            this._unitOfWork.SaveChanges();
-        }
-
-        /// <summary>逻辑删除</summary>
-        /// <param name="filter">移除条件</param>
-        public virtual void Delete(ISpecification<TAggregateRoot> filter)
-        {
-            this._unitOfWork.Delete<TAggregateRoot>(filter);
-            this._unitOfWork.SaveChanges();
-        }
-
-        /// <summary>逻辑删除</summary>
-        /// <param name="item">The item.</param>
-        public virtual void Delete(TAggregateRoot item)
-        {
-            this._unitOfWork.Delete<TAggregateRoot>(item);
-            this._unitOfWork.SaveChanges();
-        }
-
-        /// <summary>逻辑删除</summary>
-        /// <param name="id">The item.</param>
-        public virtual void Delete(TKey id)
-        {
-            this.Delete((ISpecification<TAggregateRoot>)new DirectSpecification<TAggregateRoot>((Expression<Func<TAggregateRoot, bool>>)(x => x.Id.ToString() == id.ToString())));
-            this._unitOfWork.SaveChanges();
-        }
-        #endregion 
-
+        /// <inheritdoc />
         /// <summary>跟踪</summary>
         /// <param name="item">The item.</param>
         public virtual void TrackItem(TAggregateRoot item)
@@ -295,44 +304,6 @@ namespace RayPI.Infrastructure.Repository.Core
             this._unitOfWork.Attach<TAggregateRoot>(item);
         }
 
-        #region 改
-
-        /// <summary>批量修改</summary>
-        /// <param name="tAggregateRoots">批量实体</param>
-        public virtual void Update(IQueryable<TAggregateRoot> tAggregateRoots)
-        {
-            this._unitOfWork.Update<TAggregateRoot>(tAggregateRoots);
-            this._unitOfWork.SaveChanges();
-        }
-
-        /// <summary>根据赋值的实体进行修改</summary>
-        /// <param name="filter">更新条件</param>
-        /// <param name="value">更新字段值</param>
-        public virtual void Update(ISpecification<TAggregateRoot> filter, Expression<Func<TAggregateRoot, TAggregateRoot>> value)
-        {
-            this._unitOfWork.Update<TAggregateRoot>(filter, value);
-            this._unitOfWork.SaveChanges();
-        }
-
-        /// <summary>更新实体</summary>
-        /// <param name="item">The item.</param>
-        /// <param name="ignoreFileds">忽略部分字段更新</param>
-        /// <exception cref="T:System.NotImplementedException"></exception>
-        public virtual void Update(TAggregateRoot item, params Expression<Func<TAggregateRoot, object>>[] ignoreFileds)
-        {
-            this._unitOfWork.Update<TAggregateRoot>(item, ignoreFileds);
-            this._unitOfWork.SaveChanges();
-        }
-
-        /// <summary>添加或更新</summary>
-        /// <param name="item">实体</param>
-        public virtual void UpSert(TAggregateRoot item)
-        {
-            this._unitOfWork.UpSert<TAggregateRoot>(item);
-            this._unitOfWork.SaveChanges();
-        }
-        #endregion
-
         /// <summary>CREATE DB SET</summary>
         /// <typeparam name="TAggregateRoot">The type of the t entity.</typeparam>
         /// <returns>IQueryable&lt;TAggregateRoot&gt;.</returns>
@@ -341,13 +312,40 @@ namespace RayPI.Infrastructure.Repository.Core
             return this._unitOfWork.CreateSet<TAggregateRoot>().AsNoTracking<TAggregateRoot>();
         }
 
-        /// <summary>判断是否存在</summary>
-        /// <param name="filter">查询条件</param>
-        /// <param name="isIgnoreDelete">是否忽略已逻辑删除的数据</param>
-        /// <returns>true=存在，false=不存在</returns>
-        public bool Any(ISpecification<TAggregateRoot> filter, bool isIgnoreDelete = true)
+        #region 私有方法
+        /// <summary>Gets the member information.</summary>
+        /// <param name="lambda">The lambda.</param>
+        /// <returns>MemberExpression.</returns>
+        /// <exception cref="T:System.ArgumentNullException"></exception>
+        /// <exception cref="T:System.ArgumentException"></exception>
+        /// <exception cref="T:System.ArgumentNullException"></exception>
+        /// <exception cref="T:System.ArgumentException"></exception>
+        private MemberExpression GetMemberInfo(LambdaExpression lambda)
         {
-            return this.GetAllMatching(filter, isIgnoreDelete).Any<TAggregateRoot>();
+            if (lambda == null)
+                throw new ArgumentNullException(nameof(lambda));
+            MemberExpression memberExpression = null;
+            switch (lambda.Body.NodeType)
+            {
+                case ExpressionType.Convert:
+                    memberExpression = ((UnaryExpression)lambda.Body).Operand as MemberExpression;
+                    break;
+                case ExpressionType.MemberAccess:
+                    memberExpression = lambda.Body as MemberExpression;
+                    break;
+            }
+            if (memberExpression == null)
+                throw new ArgumentException(nameof(lambda));
+            return memberExpression;
         }
+
+        /// <summary>Gets the related loading path.</summary>
+        /// <param name="relatedLoadingProperty">The related loading property.</param>
+        /// <returns>System.String.</returns>
+        private string GetRelatedLoadingPath(Expression<Func<TAggregateRoot, object>> relatedLoadingProperty)
+        {
+            return this.GetMemberInfo((LambdaExpression)relatedLoadingProperty).ToString().Replace(relatedLoadingProperty.Parameters.First<ParameterExpression>().Name + ".", "");
+        }
+        #endregion
     }
 }
