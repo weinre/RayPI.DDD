@@ -1,28 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RayPI.ApplicationService.AppService;
-using RayPI.ApplicationService.IAppService;
-using RayPI.Domain.IRepository;
 using RayPI.Infrastructure.Repository;
-using RayPI.Infrastructure.Repository.Repository;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Module = Autofac.Module;
-using RayPI.Infrastructure.Treasury.Core.Extensions;
 
 namespace RayPI.OpenApi
 {
     /// <summary>
-    /// 
+    /// 项目启动配置
     /// </summary>
     public class Startup
     {
@@ -42,8 +36,8 @@ namespace RayPI.OpenApi
 
 
         /// <summary>
-        /// This method gets called by the runtime.
-        /// Use this method to add services to the container.
+        /// 运行时被调用
+        /// 用于向Ioc容器注册服务
         /// </summary>
         /// <param name="services"></param>
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -80,7 +74,7 @@ namespace RayPI.OpenApi
             //services.RegisterAssembly("RayPI.Domain", "RayPI.Infrastructure.Repository");
             //改为交由AutoFac注册
 
-            #region AutoFac
+            #region 引入AutoFac
             var builder = new ContainerBuilder();
             builder.Populate(services);
             var module = new DefaultModuleRegister();
@@ -91,8 +85,8 @@ namespace RayPI.OpenApi
         }
 
         /// <summary>
-        /// This method gets called by the runtime.
-        /// Use this method to configure the HTTP request pipeline.
+        /// 运行时被调用
+        /// 用于配置HTTP请求管道
         /// </summary>
         /// <param name="app"></param>
         /// <param name="env"></param>
@@ -122,28 +116,30 @@ namespace RayPI.OpenApi
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// AutoFac注册
     /// </summary>
-    public class DefaultModuleRegister : Module
+    public class DefaultModuleRegister : Autofac.Module
     {
+        /// <inheritdoc />
         protected override void Load(ContainerBuilder builder)
         {
             //1.获取程序集
             //var allAssemblys = System.Web.Compilation.BuildManager.GetReferencedAssemblies();
-            Assembly[] allAssemblys = Assembly.GetEntryAssembly().GetReferencedAssemblies().Select(Assembly.Load).ToArray();
+            IEnumerable<Assembly> allAssemblies = Assembly.GetEntryAssembly().GetReferencedAssemblies().Select(Assembly.Load);
 
-            Assembly[] assemblys = allAssemblys.Where(m =>
+            Assembly[] assemblies = allAssemblies.Where(m =>
                       m.FullName.Contains(".ApplicationService") ||
                       m.FullName.Contains(".Infrastructure.Repository"))
                 .ToArray();
 
             //2.注册service
-            builder.RegisterAssemblyTypes(assemblys)
+            builder.RegisterAssemblyTypes(assemblies)
                 .Where(t => t.Name.EndsWith("Service"))
                 .AsImplementedInterfaces().InstancePerLifetimeScope();
             //3.注册repository
-            builder.RegisterAssemblyTypes(assemblys)
+            builder.RegisterAssemblyTypes(assemblies)
                 .Where(t => t.Name.EndsWith("Repos"))
                 .AsImplementedInterfaces().InstancePerLifetimeScope();
         }
