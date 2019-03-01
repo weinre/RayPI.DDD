@@ -39,6 +39,13 @@
             <param name="id">学生Id</param>
             <returns></returns>
         </member>
+        <member name="M:RayPI.OpenApi.Controllers.StudentController.Delete(System.Int64)">
+            <summary>
+            删除单个
+            </summary>
+            <param name="id">学生Id</param>
+            <returns></returns>
+        </member>
         <member name="T:RayPI.OpenApi.Controllers.ValuesController">
             <summary>
             
@@ -96,7 +103,7 @@
         </member>
         <member name="T:RayPI.OpenApi.Startup">
             <summary>
-            
+            项目启动配置
             </summary>
         </member>
         <member name="M:RayPI.OpenApi.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
@@ -107,23 +114,27 @@
         </member>
         <member name="M:RayPI.OpenApi.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
-            This method gets called by the runtime.
-            Use this method to add services to the container.
+            运行时被调用
+            用于向Ioc容器注册服务
             </summary>
             <param name="services"></param>
         </member>
         <member name="M:RayPI.OpenApi.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
             <summary>
-            This method gets called by the runtime.
-            Use this method to configure the HTTP request pipeline.
+            运行时被调用
+            用于配置HTTP请求管道
             </summary>
             <param name="app"></param>
             <param name="env"></param>
         </member>
         <member name="T:RayPI.OpenApi.DefaultModuleRegister">
+            <inheritdoc />
             <summary>
             AutoFac注册
             </summary>
+        </member>
+        <member name="M:RayPI.OpenApi.DefaultModuleRegister.Load(Autofac.ContainerBuilder)">
+            <inheritdoc />
         </member>
     </members>
 </doc>

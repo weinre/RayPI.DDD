@@ -17,15 +17,15 @@ namespace RayPI.OpenApi.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-        private readonly IStudentService _iStudentAppService;
+        private readonly IStudentService _studentAppService;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="iStudentAppService"></param>
-        public StudentController(IStudentService iStudentAppService)
+        public StudentController(IStudentService studentAppService)
         {
-            _iStudentAppService = iStudentAppService;
+            _studentAppService = studentAppService;
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace RayPI.OpenApi.Controllers
         [HttpGet]
         public PageResult<DtoStudentResponse> GetPage(int pageIndex = 1, int pageSize = 10, string name = null)
         {
-            return _iStudentAppService.GetPage(pageIndex, pageSize, name);
+            return _studentAppService.GetPage(pageIndex, pageSize, name);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace RayPI.OpenApi.Controllers
         [HttpPost]
         public long Add(DtoStudentAddRequest addRequest)
         {
-            return _iStudentAppService.Add(addRequest);
+            return _studentAppService.Add(addRequest);
         }
 
         /// <summary>
@@ -60,7 +60,18 @@ namespace RayPI.OpenApi.Controllers
         [HttpGet("{id}")]
         public DtoStudentResponse GetById(long id)
         {
-            return _iStudentAppService.GetById(id);
+            return _studentAppService.GetById(id);
+        }
+
+        /// <summary>
+        /// 删除单个
+        /// </summary>
+        /// <param name="id">学生Id</param>
+        /// <returns></returns>
+        [HttpDelete]
+        public bool Delete(long id)
+        {
+            return _studentAppService.Delete(id);
         }
     }
 }

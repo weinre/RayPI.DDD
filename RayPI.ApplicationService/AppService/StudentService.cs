@@ -11,17 +11,17 @@ namespace RayPI.ApplicationService.AppService
 {
     public class StudentService : IStudentService
     {
-        private readonly IStudentRepos _iStudentRepos;
+        private readonly IStudentRepos _studentRepos;
 
-        public StudentService(IStudentRepos iStudentRepos)
+        public StudentService(IStudentRepos studentRepos)
         {
-            _iStudentRepos = iStudentRepos;
+            _studentRepos = studentRepos;
         }
 
         public PageResult<DtoStudentResponse> GetPage(int pageIndex, int pageSize, string name)
         {
             var spec = StudentSpec.GetPage(name);
-            var pageResult = _iStudentRepos.GetListPaged(pageIndex, pageSize, spec, it => it.CreateTime, SortEnum.Desc);
+            var pageResult = _studentRepos.GetListPaged(pageIndex, pageSize, spec, it => it.CreateTime, SortEnum.Desc);
             var result = AutoMapperHelper.Map<PageResult<StudentEntity>, PageResult<DtoStudentResponse>>(pageResult);
             return result;
         }
@@ -29,14 +29,20 @@ namespace RayPI.ApplicationService.AppService
         public long Add(DtoStudentAddRequest addRequest)
         {
             var stuEntity = AutoMapperHelper.Map<DtoStudentAddRequest, StudentEntity>(addRequest);
-            return _iStudentRepos.Add(stuEntity);
+            return _studentRepos.Add(stuEntity);
         }
 
         public DtoStudentResponse GetById(long id)
         {
-            var stuEntity = _iStudentRepos.Find(id);
+            var stuEntity = _studentRepos.Find(id);
             var result = AutoMapperHelper.Map<StudentEntity, DtoStudentResponse>(stuEntity);
             return result;
+        }
+
+        public bool Delete(long id)
+        {
+            _studentRepos.Delete(id);
+            return true;
         }
     }
 }

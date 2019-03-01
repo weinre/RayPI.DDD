@@ -8,5 +8,6 @@ namespace RayPI.ApplicationService.IAppService
         long Add(DtoStudentAddRequest addRequest);
         PageResult<DtoStudentResponse> GetPage(int pageIndex, int pageSize, string name);
         DtoStudentResponse GetById(long id);
+        bool Delete(long id);
     }
 }

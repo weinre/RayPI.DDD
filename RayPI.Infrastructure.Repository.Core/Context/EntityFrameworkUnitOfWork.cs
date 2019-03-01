@@ -129,7 +129,13 @@ namespace RayPI.Infrastructure.Repository.Core.Context
         /// <param name="filter">The filter.</param>
         public void Delete<TAggregateRoot>(ISpecification<TAggregateRoot> filter) where TAggregateRoot : EntityBase, new()
         {
-            //LinqExtension.Each<TAggregateRoot>(this.CreateSet<TAggregateRoot>().Where<TAggregateRoot>(filter.SatisfiedBy()).Set<TAggregateRoot, bool>((Expression<Func<TAggregateRoot, bool>>)(x => x.IsDeleted), 1 != 0), (Action<TAggregateRoot>)(x => this.Update<TAggregateRoot>(x, new Expression<Func<TAggregateRoot, object>>[0])));
+            var l = this.CreateSet<TAggregateRoot>().Where<TAggregateRoot>(filter.SatisfiedBy());
+            l.Each(x =>
+            {
+                x.IsDeleted = true;
+                this.Update<TAggregateRoot>(x, new Expression<Func<TAggregateRoot, object>>[0]);
+            });
+            //LinqExtension.Each<TAggregateRoot>(this.CreateSet<TAggregateRoot>().Where<TAggregateRoot>(filter.SatisfiedBy()).Set<TAggregateRoot, bool>((Expression<Func<TAggregateRoot, bool>>)(x => x.IsDeleted), 1 != 0), (Action<TAggregateRoot>)(x => this.Update<TAggregateRoot>(x)));
         }
 
         /// <summary>根据条件逻辑删除</summary>
@@ -272,7 +278,7 @@ namespace RayPI.Infrastructure.Repository.Core.Context
             this.ChangeTracker.Entries().ToList<EntityEntry>().ForEach((Action<EntityEntry>)(entry => entry.State = EntityState.Unchanged));
         }
 
-        
+
         /// <summary>Executes the query.</summary>
         /// <typeparam name="TAggregateRoot">The type of the t aggregate root.</typeparam>
         /// <param name="sqlQuery">The SQL query.</param>
@@ -303,7 +309,7 @@ namespace RayPI.Infrastructure.Repository.Core.Context
             throw new NotImplementedException();
             //return this.Database.ExecuteStoredProcedure<TAggregateRoot>(storedProcedure);
         }
-        
+
 
         /// <summary>执行无返回值的存储过程</summary>
         /// <param name="storedProcedure">The stored procedure.</param>
@@ -312,7 +318,7 @@ namespace RayPI.Infrastructure.Repository.Core.Context
             throw new NotImplementedException();
             //this.Database.ExecuteStoredProcedure(storedProcedure);
         }
-        
+
 
         /// <summary>开始事务</summary>
         /// <param name="level">The level.</param>
@@ -323,7 +329,7 @@ namespace RayPI.Infrastructure.Repository.Core.Context
             this.Database.BeginTransaction();
         }
 
-        
+
         /// <summary>Ups the sert.</summary>
         /// <typeparam name="TAggregateRoot">The type of the t aggregate root.</typeparam>
         /// <param name="item">The item.</param>
@@ -332,7 +338,7 @@ namespace RayPI.Infrastructure.Repository.Core.Context
             throw new NotImplementedException();
             //this.Set<TAggregateRoot>().AddOrUpdate<TAggregateRoot>(item);
         }
-        
+
 
         /// <summary>事务回滚</summary>
         public void TransRollBack()
